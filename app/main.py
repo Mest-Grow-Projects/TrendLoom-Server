@@ -1,10 +1,11 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.database.db import init_db
 from app.core.constants import messages, origins
 from app.core.logging_config import logger
 from app.auth.auth_route import router as auth_router
+from app.products.products_routes import router as products_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -40,3 +41,4 @@ def read_root():
     return messages["welcome"]
 
 app.include_router(auth_router, prefix="/api")
+app.include_router(products_router, prefix="/api")
