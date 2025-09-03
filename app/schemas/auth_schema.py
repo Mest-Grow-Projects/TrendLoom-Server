@@ -1,5 +1,6 @@
-from pydantic import BaseModel, EmailStr, Field, model_validator
+from pydantic import BaseModel, EmailStr, Field, model_validator, field_validator
 from app.core.constants import validations, patterns_regex
+import re
 
 class Token(BaseModel):
     access_token: str
@@ -19,14 +20,25 @@ class SignupSchema(BaseModel):
     email: EmailStr
     password: str = Field(
         min_length=8,
-        pattern=patterns_regex["password"],
         description=validations["password"],
     )
     confirm_password: str = Field(
         min_length=8,
-        pattern=patterns_regex["password"],
         description=validations["password"],
     )
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        if not re.search(r"[a-z]", value):
+            raise ValueError(validations["lowercase"])
+        if not re.search(r"[A-Z]", value):
+            raise ValueError(validations["uppercase"])
+        if not re.search(r"\d", value):
+            raise ValueError(validations["digit"])
+        if not re.search(r"[@$!%*?&]", value):
+            raise ValueError(validations["special_character"])
+        return value
 
     @model_validator(mode='after')
     def check_password_match(self) -> 'SignupSchema':
@@ -40,7 +52,6 @@ class LoginSchema(BaseModel):
     email: EmailStr
     password: str = Field(
         min_length=8,
-        pattern=patterns_regex["password"],
         description=validations["password"],
     )
     model_config = {"extra": "forbid"}
