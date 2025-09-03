@@ -13,10 +13,14 @@ from datetime import timedelta, datetime, timezone
 from app.core.config import get_settings
 import jwt
 
-secret_key = get_settings().SECRET_KEY
-algorithm = get_settings().ALGORITHM
+secret = get_settings().SECRET_KEY
 
 class AuthService:
+    def __init__(self, secret_key: str, jwt_algorithm: str = "HS256"):
+        self.secret_key = secret_key
+        self.jwt_algorithm = jwt_algorithm
+        self.signup_token_duration = timedelta(minutes=30)
+
     async def signup(self, user: SignupSchema):
         await check_existing_user(str(user.email))
         verification_code = generate_verification_code()
@@ -29,13 +33,12 @@ class AuthService:
         )
         await new_user.insert()
 
-        signup_token_expiry = timedelta(minutes=30)
         payload = {
             "sub": str(user.email),
             "code": verification_code,
-            'exp': datetime.now(timezone.utc) + signup_token_expiry,
+            'exp': datetime.now(timezone.utc) + self.signup_token_duration,
         }
-        token = jwt.encode(payload, secret_key, algorithm=algorithm)
+        token = jwt.encode(payload, self.secret_key, algorithm=self.jwt_algorithm)
 
         return {
             'message': success_messages['signup'],
@@ -51,7 +54,7 @@ class AuthService:
             )
 
         try:
-            decoded_token = jwt.decode(token, secret_key, algorithms=[algorithm])
+            decoded_token = jwt.decode(token, self.secret_key, algorithms=[self.jwt_algorithm])
             email = decoded_token.get('sub')
             token_code = decoded_token.get('code')
 
@@ -96,7 +99,7 @@ class AuthService:
             )
 
 
-    async def login(self, user: LoginSchema) -> dict:
+    async def login(self, user: LoginSchema):
         found_user = await find_user_by_email(str(user.email))
         password_valid = verify_password(user.password, found_user.password)
 
@@ -126,4 +129,4 @@ class AuthService:
             }
         }
 
-auth_service = AuthService()
+auth_service = AuthService(secret_key=secret)
