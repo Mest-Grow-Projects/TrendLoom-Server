@@ -31,9 +31,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app_router = APIRouter(prefix="/api")
-app.include_router(app_router)
-
 @app.get(
     "/",
     tags=["App"],
@@ -42,4 +39,4 @@ app.include_router(app_router)
 def read_root():
     return messages["welcome"]
 
-app.include_router(auth_router)
+app.include_router(auth_router, prefix="/api")
