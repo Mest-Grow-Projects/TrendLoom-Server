@@ -86,7 +86,7 @@ class AuthService:
             user.accountStatus = AccountStatus.VERIFIED
             await user.save()
 
-            return success_messages["account_verified"]
+            return success_messages["verify_account"]
         except jwt.ExpiredSignatureError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -123,7 +123,7 @@ class AuthService:
                 "user": {
                     "name": found_user.name,
                     "email": found_user.email,
-                    "roles": found_user.role,
+                    "role": found_user.role,
                     "accountStatus": found_user.accountStatus,
                 }
             }
