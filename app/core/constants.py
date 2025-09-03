@@ -16,6 +16,10 @@ status_messages = {
     "conflict": "User with this email already exists",
     "credentials_error": "Could not validate credentials",
     "code_required": "Verification code is required",
+    "product_conflict": "Product with this name already exists",
+    "product_not_found": "Product not found",
+    "product_id_required": "Product ID is required",
+    "update_invalid": "No valid fields provided for update"
 }
 
 origins = [
@@ -49,4 +53,9 @@ success_messages = {
     "verify_account": "Account verified successfully",
     "login": "Login successful",
     "signup": "Signup successful",
+    "product": "Product successfully created",
+    "all_products": "Products fetched successfully",
+    "update_product": "Product successfully updated",
+    "find_product": "Product successfully found",
+    "delete_product": "Product successfully deleted",
 }
