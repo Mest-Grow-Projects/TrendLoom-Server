@@ -30,7 +30,7 @@ async def signup_user(user: SignupSchema):
     response_model=VerifyAccountResponse,
 )
 async def verify_user(data: VerifyAccount, token: str):
-    return await auth_service.verify(data.code, token)
+    return await auth_service.verify_account(data, token)
 
 @router.post(
     "/login",
