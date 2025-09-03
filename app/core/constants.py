@@ -21,3 +21,16 @@ origins = [
     "http://localhost:4200",
     "http://localhost:8080",
 ]
+
+validations = {
+    "name": "Name must contain only letters and single spaces between words, no numbers or special characters allowed",
+    "password": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+    "code": "Verification OTP code must be a 6-digit number",
+    "password_mismatch": "passwords don't match",
+}
+
+patterns_regex = {
+    "name": "^(?! )[A-Za-z]+(?: [A-Za-z]+)*(?<! )$",
+    "password": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>]{8,50}$",
+    "code": "^\d{6}$",
+}
