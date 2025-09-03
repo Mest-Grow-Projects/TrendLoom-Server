@@ -63,3 +63,26 @@ class VerifyAccount(BaseModel):
         description=validations["code"],
     )
     model_config = {"extra": "forbid"}
+
+
+class SignupResponse(BaseModel):
+    message: str
+    token: str
+
+
+class VerifyAccountResponse(BaseModel):
+    message: str
+
+class UserResponse(BaseModel):
+    name: str
+    email: str
+    accountStatus: str
+    role: str
+
+class Data(BaseModel):
+    access_token: str
+    user: UserResponse
+
+class LoginResponse(BaseModel):
+    message: str
+    data: Data
