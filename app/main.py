@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.database.db import init_db
@@ -20,7 +20,7 @@ app = FastAPI(
     title=messages["app_title"],
     description=messages["app_description"],
     version=messages["app_version"],
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -30,6 +30,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app_router = APIRouter(prefix="/api")
+app.include_router(app_router)
 
 @app.get(
     "/",
