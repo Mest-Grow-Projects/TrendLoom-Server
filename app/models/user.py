@@ -23,14 +23,14 @@ class Gender(str, Enum):
 class User(Document):
     name: str
     email: Annotated[EmailStr, Indexed(unique=True)]
-    phone: str | None
-    address: str | None
+    phone: str | None = None
+    address: str | None = None
     password: str
     role: Roles = Roles.CUSTOMER
     accountStatus: AccountStatus = AccountStatus.PENDING
-    gender: Gender | None
-    avatar: str | None
-    dob: datetime | None
+    gender: Gender | None = None
+    avatar: str | None = None
+    dob: datetime | None = None
     createdAt: datetime = Field(default_factory=datetime.now)
     updatedAt: datetime = Field(default_factory=datetime.now)
 
