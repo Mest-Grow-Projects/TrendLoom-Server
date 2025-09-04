@@ -62,7 +62,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
     except InvalidTokenError:
         raise credentials_exception
 
-    user = await find_user_by_id(int(token_data.sub))
+    user = await find_user_by_id(token_data.sub)
     if user is None:
         raise credentials_exception
     return user
