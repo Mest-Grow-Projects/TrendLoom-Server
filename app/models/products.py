@@ -1,9 +1,10 @@
 from typing import List, Annotated
 from enum import Enum
 from beanie import Document, Indexed
-from datetime import datetime
 from pydantic import Field, BaseModel
 import pymongo
+from app.models.base_mixin import TimestampMixin
+
 
 class StockStatus(str, Enum):
     IN_STOCK = "in_stock"
@@ -14,7 +15,7 @@ class Attributes(BaseModel):
     color: List[str]
     size: List[str]
 
-class Product(Document):
+class Product(Document, TimestampMixin):
     name: str | None = None
     description: str | None = None
     price: Annotated[float, Indexed()] | None = None
@@ -27,8 +28,6 @@ class Product(Document):
     is_featured: bool | None = None
     is_new: bool | None = None
     rating: float | None = None
-    createdAt: datetime = Field(default_factory=datetime.now)
-    updatedAt: datetime = Field(default_factory=datetime.now)
 
     class Settings:
         name = "products"
