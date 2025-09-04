@@ -40,6 +40,7 @@ class ProductOut(BaseModel):
     name: str
     description: str
     price: float
+    currency: str = Field(default="USD")
     images: List[str] | None = None
     attributes: List[Attributes] | None = None
     features: List[str] | None = None

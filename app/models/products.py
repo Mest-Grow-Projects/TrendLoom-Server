@@ -18,6 +18,7 @@ class Product(Document):
     name: str | None = None
     description: str | None = None
     price: Annotated[float, Indexed()] | None = None
+    currency: str = Field(default="USD")
     images: List[str] | None = None
     attributes: List[Attributes] | None = None
     features: List[str] | None = None
