@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from datetime import datetime
+from pydantic import BaseModel, Field
 from typing import List
 from beanie import PydanticObjectId
 
@@ -15,5 +16,12 @@ class CartItemResponse(BaseModel):
     quantity: int
 
 class CartResponse(BaseModel):
-    user_id: PydanticObjectId
+    id: str = Field(..., alias="_id")
+    user_id: str
     items: List[CartItemResponse]
+    createdAt: datetime
+    updatedAt: datetime
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
