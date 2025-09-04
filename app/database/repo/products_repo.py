@@ -1,6 +1,8 @@
+from app.models.cart import Cart
 from app.models.products import Product
 from fastapi import HTTPException, status
 from app.core.constants import status_messages
+from beanie import PydanticObjectId
 
 async def check_existing_product(name: str) -> bool:
     existing_product = await Product.find_one(Product.name == name)
@@ -19,3 +21,10 @@ async def find_product_by_id(product_id: str) -> Product:
             detail=status_messages["product_not_found"]
         )
     return product
+
+async def get_or_create_cart(user_id: PydanticObjectId) -> Cart:
+    cart = await Cart.get(user_id)
+    if not cart:
+        cart = Cart(user_id=user_id ,items=[])
+        await cart.insert()
+    return cart
