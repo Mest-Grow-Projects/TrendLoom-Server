@@ -7,6 +7,7 @@ from app.core.logging_config import logger
 from app.auth.auth_route import router as auth_router
 from app.products.products_routes import router as products_router
 from app.users.users_route import router as users_router
+from app.cart.cart_route import router as cart_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,3 +45,4 @@ def read_root():
 app.include_router(auth_router, prefix="/api")
 app.include_router(products_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
+app.include_router(cart_router, prefix="/api")
