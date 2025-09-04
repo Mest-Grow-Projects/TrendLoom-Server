@@ -42,15 +42,6 @@ It provides APIs for **authentication, user management, and product management**
   * Logging configured
   * Interactive API documentation with Swagger & ReDoc
 
----
-
-## 🌐 Deployed Server
-
-* **Base URL**: [https://trendloom-server.onrender.com](https://trendloom-server.onrender.com)
-* **Swagger Docs**: [https://trendloom-server.onrender.com/docs](https://trendloom-server.onrender.com/docs)
-* **ReDoc**: [https://trendloom-server.onrender.com/redoc](https://trendloom-server.onrender.com/redoc)
-
----
 
 ## 🛠️ Tech Stack
 
