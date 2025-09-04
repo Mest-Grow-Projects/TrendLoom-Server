@@ -1,10 +1,8 @@
 from beanie import PydanticObjectId
-
 from app.core.constants import success_messages
 from app.models.cart import CartItem
 from app.database.repo.products_repo import find_product_by_id, get_or_create_cart
 from app.database.repo.user_repo import find_user_by_id
-from app.models.products import Product
 from app.schemas.cart_schema import AddToCartRequest
 
 
@@ -14,7 +12,8 @@ class CartService:
             user_id: PydanticObjectId,
             data: AddToCartRequest
     ):
-        await find_product_by_id(data.product_id)
+        await find_user_by_id(str(user_id))
+        await find_product_by_id(str(data.product_id))
         cart = await get_or_create_cart(user_id)
 
         cart_item_exists = False
