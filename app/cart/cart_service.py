@@ -31,3 +31,5 @@ class CartService:
             "message": success_messages["cart_added"],
             "data": cart
         }
+
+cart_service = CartService()
