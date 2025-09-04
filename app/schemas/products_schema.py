@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from app.core.constants import validations, patterns_regex
 from typing import List
 from app.models.products import Attributes, StockStatus
+from beanie import PydanticObjectId
 
 
 class ProductsSchema(BaseModel):
@@ -35,7 +36,7 @@ class UpdateProductSchema(BaseModel):
 
 
 class ProductOut(BaseModel):
-    id: str
+    id: PydanticObjectId
     name: str
     description: str
     price: float
