@@ -67,4 +67,5 @@ success_messages = {
     "add_app_admin": "Admin added successfully",
     "change_role_status": "user role status changed successfully",
     "add_product_admin": "Product admin added successfully",
+    "cart_added": "Cart item added successfully"
 }
