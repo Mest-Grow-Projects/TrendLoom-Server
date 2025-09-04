@@ -1,6 +1,6 @@
 from app.schemas.products_schema import ProductsSchema, UpdateProductSchema
 from app.models.products import Product
-from app.core.constants import success_messages
+from app.core.constants import success_messages, status_messages
 from fastapi import HTTPException, status
 from app.database.repo.products_repo import check_existing_product, find_product_by_id
 
@@ -35,7 +35,7 @@ class ProductsService:
         if not product_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=success_messages["product_id_required"],
+                detail=status_messages["product_id_required"],
             )
 
         product = await find_product_by_id(product_id)
@@ -49,7 +49,7 @@ class ProductsService:
         if not product_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=success_messages["product_id_required"],
+                detail=status_messages["product_id_required"],
             )
 
         updated_product = await find_product_by_id(product_id)
@@ -58,7 +58,7 @@ class ProductsService:
         if not updated_data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=success_messages["update_invalid"],
+                detail=status_messages["update_invalid"],
             )
 
         await updated_product.set(updated_data)
@@ -73,7 +73,7 @@ class ProductsService:
         if not product_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-
+                detail=status_messages["product_id_required"],
             )
 
         product = await find_product_by_id(product_id)
