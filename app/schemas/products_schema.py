@@ -59,3 +59,6 @@ class ProductResponse(BaseModel):
 class ProductsResponse(BaseModel):
     message: str
     data: List[ProductOut]
+
+class MessageResponse(BaseModel):
+    message: str
