@@ -9,7 +9,7 @@ class CartItem(BaseModel):
     product_id: PydanticObjectId
     quantity: int = 1
 
-class Cart(Document, TimestampMixin):
+class Cart(TimestampMixin, Document):
     user_id: PydanticObjectId
     items: List[CartItem] = []
 
