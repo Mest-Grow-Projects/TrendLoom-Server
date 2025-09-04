@@ -8,7 +8,8 @@ messages = {
 }
 
 error_messages = {
-    "database_url": "DATABASE_URL environment variable is not set"
+    "database_url": "DATABASE_URL environment variable is not set",
+    "user_not_admin": "This user is not admin",
 }
 
 status_messages = {
@@ -19,7 +20,8 @@ status_messages = {
     "product_conflict": "Product with this name already exists",
     "product_not_found": "Product not found",
     "product_id_required": "Product ID is required",
-    "update_invalid": "No valid fields provided for update"
+    "update_invalid": "No valid fields provided for update",
+    "user_id_required": "User ID is required",
 }
 
 origins = [
@@ -58,4 +60,11 @@ success_messages = {
     "update_product": "Product successfully updated",
     "find_product": "Product successfully found",
     "delete_product": "Product successfully deleted",
+    "all_users": "Users retrieved successfully",
+    "found_user": "User found successfully",
+    "update_user": "User updated successfully",
+    "delete_user": "User deleted successfully",
+    "add_app_admin": "Admin added successfully",
+    "change_role_status": "user role status changed successfully",
+    "add_product_admin": "Product admin added successfully",
 }
