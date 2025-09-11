@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Literal
 from datetime import datetime
 from beanie import PydanticObjectId
-from pydantic import BaseModel
-from app.models.user import Roles, AccountStatus, Gender
+from pydantic import BaseModel, Field
+from app.database.models.user import Gender, AccountStatus, Roles
 
 
 class UserInfo(BaseModel):
@@ -38,3 +38,14 @@ class UpdateUserInfo(BaseModel):
 
 class ChangeRole(BaseModel):
     role: Roles
+
+class FilterQuery(BaseModel):
+    name: str | None = None
+    gender: Gender | None = None
+    role: Roles | None = None
+    account_status: AccountStatus | None = None
+    order_by: Literal["created_at", "updated_at"] = "created_at"
+    page: int = Field(1, ge=1)
+    limit: int = Field(10, ge=1, le=50)
+
+    model_config = {"extra": "forbid"}
