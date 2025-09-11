@@ -1,8 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
-from app.core.constants import validations, patterns_regex
+from app.core.config.constants import validations, patterns_regex
 from typing import List
-from app.models.products import Attributes, StockStatus
+from app.database.models.products import Attributes, StockStatus
 from beanie import PydanticObjectId
 
 

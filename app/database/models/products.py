@@ -3,7 +3,7 @@ from enum import Enum
 from beanie import Document, Indexed
 from pydantic import Field, BaseModel
 import pymongo
-from app.models.base_mixin import TimestampMixin
+from app.database.models.base_mixin import TimestampMixin
 
 
 class StockStatus(str, Enum):

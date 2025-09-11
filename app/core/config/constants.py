@@ -10,12 +10,14 @@ messages = {
 error_messages = {
     "database_url": "DATABASE_URL environment variable is not set",
     "user_not_admin": "This user is not admin",
+    "internal_error": "An internal server error occurred",
+    "expired_token": "Token has expired, please login again",
 }
 
 status_messages = {
     "not_found": "User not found",
     "conflict": "User with this email already exists",
-    "credentials_error": "Could not validate credentials",
+    "credentials_error": "Authorization header must be provided with a 'Bearer' prefix",
     "code_required": "Verification code is required",
     "product_conflict": "Product with this name already exists",
     "product_not_found": "Product not found",
@@ -44,6 +46,7 @@ validations = {
     "token_required": "Token is required",
     "invalid_code": "Verification code is not valid",
     "invalid_token": "Invalid token",
+    "invalid_payload": "Invalid token payload",
 }
 
 patterns_regex = {

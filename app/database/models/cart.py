@@ -2,7 +2,7 @@ from typing import List
 from beanie import Document
 from beanie import PydanticObjectId
 from pydantic import BaseModel
-from app.models.base_mixin import TimestampMixin
+from app.database.models.base_mixin import TimestampMixin
 
 
 class CartItem(BaseModel):

@@ -1,13 +1,18 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Depends
 from .users_service import users_service
 from app.schemas.users_schema import (
     UsersResponse,
     UserResponse,
     UpdateUserInfo,
-    ChangeRole
+    ChangeRole, FilterQuery
 )
-from ..schemas.auth_schema import SignupSchema
-from ..schemas.products_schema import MessageResponse
+from app.schemas.auth_schema import SignupSchema
+from app.schemas.products_schema import MessageResponse
+from app.core.security.role_guard import RoleGuard
+from app.database.models.user import Roles
+
+admin_access = RoleGuard(allowed_roles=[Roles.ADMIN])
+product_access = RoleGuard(allowed_roles=[Roles.PRODUCT_ADMIN, Roles.ADMIN])
 
 router = APIRouter(
     prefix="/users",
@@ -19,8 +24,9 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
     summary="Get all users",
     response_model=UsersResponse,
+    dependencies=[Depends(admin_access)],
 )
-async def get_users():
+async def get_users(filter_query: FilterQuery = Depends()):
     return await users_service.get_all_users()
 
 @router.get(
@@ -46,6 +52,7 @@ async def update_user_bio(user_id: str, bio: UpdateUserInfo):
     status_code=status.HTTP_200_OK,
     summary="Delete user profile",
     response_model=MessageResponse,
+    dependencies=[Depends(admin_access)],
 )
 async def delete_user_profile(user_id: str):
     return await users_service.delete_user_by_id(user_id)
@@ -55,6 +62,7 @@ async def delete_user_profile(user_id: str):
     status_code=status.HTTP_201_CREATED,
     summary="Create a new app admin profile",
     response_model=MessageResponse,
+    dependencies=[Depends(admin_access)],
 )
 async def create_admin(user: SignupSchema):
     return await users_service.add_app_admin(user)
@@ -64,6 +72,7 @@ async def create_admin(user: SignupSchema):
     status_code=status.HTTP_201_CREATED,
     summary="Create a new product admin profile",
     response_model=MessageResponse,
+    dependencies=[Depends(product_access)],
 )
 async def create_product_admin(user: SignupSchema):
     return await users_service.add_product_admin(user)
@@ -73,6 +82,7 @@ async def create_product_admin(user: SignupSchema):
     status_code=status.HTTP_200_OK,
     summary="Update user role status",
     response_model=MessageResponse,
+    dependencies=[Depends(admin_access)],
 )
 async def update_user_role(user_id: str, data: ChangeRole):
     return await users_service.change_role_status(user_id, data)

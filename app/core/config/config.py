@@ -1,20 +1,25 @@
+from pydantic import SecretStr, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
-import os
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = 'development'
     DATABASE_URL: str
-    SECRET_KEY: str
-    ALGORITHM: str
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    MAIL_SERVER: str
+    MAIL_PORT: int
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: SecretStr
+    MAIL_FROM: EmailStr
+    MAIL_FROM_NAME: str
+    CLOUDINARY_URL: str
 
     model_config = SettingsConfigDict(
-        env_file=os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-            '.env'
-        ), env_file_encoding='utf-8'
+        env_file='.env',
+        env_file_encoding='utf-8'
     )
 
 @lru_cache

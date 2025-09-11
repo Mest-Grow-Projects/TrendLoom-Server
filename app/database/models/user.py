@@ -4,7 +4,7 @@ from pydantic import EmailStr
 from datetime import datetime
 from beanie import Document, Indexed
 import pymongo
-from app.models.base_mixin import TimestampMixin
+from app.database.models.base_mixin import TimestampMixin
 
 class Roles(str, Enum):
     CUSTOMER = "CUSTOMER"

@@ -1,6 +1,6 @@
 from app.schemas.products_schema import ProductsSchema, UpdateProductSchema
-from app.models.products import Product
-from app.core.constants import success_messages, status_messages
+from app.database.models.products import Product
+from app.core.config.constants import success_messages, status_messages
 from fastapi import HTTPException, status
 from app.database.repo.products_repo import check_existing_product, find_product_by_id
 

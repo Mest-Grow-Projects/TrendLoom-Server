@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Depends
 from .products_service import product_service
 from app.schemas.products_schema import (
     ProductsSchema,
@@ -7,6 +7,10 @@ from app.schemas.products_schema import (
     ProductsResponse,
     MessageResponse
 )
+from app.core.security.role_guard import RoleGuard
+from app.database.models.user import Roles
+admin_access = RoleGuard(allowed_roles=[Roles.ADMIN])
+product_access = RoleGuard(allowed_roles=[Roles.PRODUCT_ADMIN, Roles.ADMIN])
 
 router = APIRouter(
     prefix="/products",
@@ -18,6 +22,7 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     summary="Create a new product",
     response_model=ProductResponse,
+    dependencies=[Depends(admin_access)],
 )
 async def create_product(data: ProductsSchema):
     return await product_service.create_product(data)
@@ -45,6 +50,7 @@ async def get_product(product_id: str):
     status_code=status.HTTP_200_OK,
     summary="Update a product",
     response_model=ProductResponse,
+    dependencies=[Depends(product_access)],
 )
 async def update_product(product_id: str, product: UpdateProductSchema):
     return await product_service.update_product_by_id(product_id, product)
@@ -54,6 +60,7 @@ async def update_product(product_id: str, product: UpdateProductSchema):
     status_code=status.HTTP_200_OK,
     summary="Delete a product",
     response_model=MessageResponse,
+    dependencies=[Depends(product_access)],
 )
 async def delete_product(product_id: str):
     return await product_service.delete_product(product_id)

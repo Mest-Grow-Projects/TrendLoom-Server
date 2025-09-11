@@ -1,8 +1,8 @@
 from typing import List
-from app.models.cart import Cart
-from app.models.products import Product
+from app.database.models.cart import Cart
+from app.database.models.products import Product
 from fastapi import HTTPException, status
-from app.core.constants import status_messages
+from app.core.config.constants import status_messages
 from beanie import PydanticObjectId
 from beanie.operators import In
 
