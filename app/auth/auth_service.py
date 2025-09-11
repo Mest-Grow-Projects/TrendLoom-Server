@@ -1,7 +1,8 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, BackgroundTasks
 from app.core.config.constants import validations, success_messages, status_messages
 from app.core.security.password_hash import get_password_hash, verify_password
 from app.database.models.user import User, AccountStatus
+from app.mailer.service.email_service import send_verify_account_mail, send_onboarding_mail
 from app.schemas.auth_schema import SignupSchema, LoginSchema, VerifyAccount, UserResponse
 from app.database.repo.user_repo import check_existing_user, find_user_by_email
 from app.utils.auth_utils import generate_verification_code, create_login_tokens
@@ -19,7 +20,7 @@ class AuthService:
         self.jwt_algorithm = jwt_algorithm
         self.signup_token_duration = timedelta(minutes=30)
 
-    async def signup(self, user: SignupSchema):
+    async def signup(self, user: SignupSchema, background_tasks: BackgroundTasks):
         await check_existing_user(str(user.email))
         verification_code = generate_verification_code()
         hashed_password = get_password_hash(user.password)
@@ -38,6 +39,13 @@ class AuthService:
         }
         token = jwt.encode(payload, self.secret_key, algorithm=self.jwt_algorithm)
 
+        background_tasks.add_task(
+            send_verify_account_mail,
+            name=new_user.name,
+            code=verification_code,
+            to=[user.email],
+        )
+
         return {
             'message': success_messages['signup'],
             'data': {
@@ -47,7 +55,7 @@ class AuthService:
         }
 
 
-    async def verify_account(self, data: VerifyAccount, token: str):
+    async def verify_account(self, data: VerifyAccount, token: str, background_tasks: BackgroundTasks):
         if not data.code:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -86,6 +94,12 @@ class AuthService:
 
             user.accountStatus = AccountStatus.VERIFIED
             await user.save()
+
+            background_tasks.add_task(
+                send_onboarding_mail,
+                name=user.name,
+                to=[email],
+            )
 
             return { "message": success_messages["verify_account"] }
         except jwt.ExpiredSignatureError:
