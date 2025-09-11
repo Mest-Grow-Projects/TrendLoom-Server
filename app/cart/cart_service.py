@@ -1,6 +1,6 @@
 from beanie import PydanticObjectId
-from app.core.constants import success_messages
-from app.models.cart import CartItem
+from app.core.config.constants import success_messages
+from app.database.models.cart import CartItem
 from app.database.repo.products_repo import (
     find_product_by_id,
     get_or_create_cart,
