@@ -1,18 +1,48 @@
 from fastapi import HTTPException, status
-from app.core.constants import success_messages, status_messages
-from app.database.repo.user_repo import find_user_by_id, check_existing_user
-from app.models.user import User, AccountStatus, Roles
+from app.core.config.constants import success_messages, status_messages
+from app.database.models.user import AccountStatus, Roles, User
+from app.database.repo.user_repo import (
+    find_user_by_id,
+    get_and_validate_user,
+    validate_updated_data,
+    create_user
+)
 from app.schemas.auth_schema import SignupSchema
-from app.schemas.users_schema import UpdateUserInfo, ChangeRole
-from app.utils.auth_utils import get_password_hash
+from app.schemas.users_schema import UpdateUserInfo, ChangeRole, FilterQuery
 
 
 class UsersService:
-    async def get_all_users(self):
-        users = await User.find_all().to_list()
+    async def get_all_users(self, filter_query: FilterQuery):
+        skip = (filter_query.page - 1) * filter_query.limit
+        query = {}
+
+        if filter_query.name:
+            query["name"] = {"$regex": filter_query.name, "$options": "i"}
+        if filter_query.gender:
+            query["gender"] = filter_query.gender.value
+        if filter_query.role:
+            query["role"] = filter_query.role.value
+        if filter_query.account_status:
+            query["accountStatus"] = filter_query.account_status.value
+
+        total_users_count = await User.find(query).count()
+        users = (
+            await User.find(query)
+            .sort(f"-{filter_query.order_by}")
+            .skip(skip)
+            .limit(filter_query.limit)
+            .to_list()
+        )
+
         return {
             "message": success_messages["all_users"],
             "data": users,
+            "pagination": {
+                "total": total_users_count,
+                "page": filter_query.page,
+                "limit": filter_query.limit,
+                "total_pages": (total_users_count + filter_query.limit - 1) // filter_query.limit,
+            }
         }
 
 
@@ -43,22 +73,10 @@ class UsersService:
 
 
     async def update_user_by_id(self, user_id: str, data: UpdateUserInfo):
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=status_messages["user_id_required"],
-            )
-
-        updated_user = await find_user_by_id(user_id)
-        updated_data = data.model_dump(exclude_unset=True, exclude_none=True)
-
-        if not updated_data:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=status_messages["update_invalid"],
-            )
-
+        updated_user = await get_and_validate_user(user_id)
+        updated_data = validate_updated_data(data)
         await  updated_user.set(updated_data)
+
         return {
             "message": success_messages["update_user"],
             "data": updated_user
@@ -66,28 +84,17 @@ class UsersService:
 
 
     async def delete_user_by_id(self, user_id: str):
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=status_messages["user_id_required"],
-            )
-
-        user = await find_user_by_id(user_id)
-        await user.delete()
-        return { "message": success_messages["delete_user"] }
+        user_to_delete = await get_and_validate_user(user_id)
+        await user_to_delete.delete()
+        return {"message": success_messages["delete_user"]}
 
 
     async def add_app_admin(self, user: SignupSchema):
-        await check_existing_user(str(user.email))
-        hashed_password = get_password_hash(user.password)
-
-        await User(
-            name=user.name,
-            email=user.email,
-            password=hashed_password,
-            accountStatus=AccountStatus.VERIFIED,
-            role=Roles.ADMIN
-        ).insert()
+        await create_user(
+            user=user,
+            role=Roles.ADMIN,
+            account_status=AccountStatus.VERIFIED,
+        )
 
         return {
             "message": success_messages["add_app_admin"],
@@ -95,16 +102,11 @@ class UsersService:
 
 
     async def add_product_admin(self, user: SignupSchema):
-        await check_existing_user(str(user.email))
-        hashed_password = get_password_hash(user.password)
-
-        await User(
-            name=user.name,
-            email=user.email,
-            password=hashed_password,
-            accountStatus=AccountStatus.VERIFIED,
-            role=Roles.PRODUCT_ADMIN
-        ).insert()
+        await create_user(
+            user=user,
+            role=Roles.PRODUCT_ADMIN,
+            account_status=AccountStatus.VERIFIED,
+        )
 
         return {
             "message": success_messages["add_product_admin"],
@@ -112,25 +114,13 @@ class UsersService:
 
 
     async def change_role_status(self, user_id: str, data: ChangeRole):
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=status_messages["user_id_required"],
-            )
-
-        updated_role = await find_user_by_id(user_id)
-        updated_data = data.model_dump(exclude_unset=True, exclude_none=True)
-
-        if not updated_data:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=status_messages["update_invalid"],
-            )
-
-        await updated_role.set(updated_data)
+        updated_user_role = await get_and_validate_user(user_id)
+        updated_data = validate_updated_data(data)
+        await updated_user_role.set(updated_data)
 
         return {
             "message": success_messages["change_role_status"],
         }
+
 
 users_service = UsersService()
