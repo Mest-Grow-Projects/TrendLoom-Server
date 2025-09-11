@@ -3,3 +3,4 @@ beanie
 pydantic-settings
 pyjwt
 passlib[bcrypt]
+fastapi_mail
