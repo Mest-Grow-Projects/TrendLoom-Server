@@ -1,22 +1,20 @@
 from fastapi import HTTPException, status
-from app.core.constants import validations, success_messages, status_messages
-from app.schemas.auth_schema import SignupSchema, LoginSchema, VerifyAccount
-from app.models.user import User, AccountStatus
+from app.core.config.constants import validations, success_messages, status_messages
+from app.core.security.password_hash import get_password_hash, verify_password
+from app.database.models.user import User, AccountStatus
+from app.schemas.auth_schema import SignupSchema, LoginSchema, VerifyAccount, UserResponse
 from app.database.repo.user_repo import check_existing_user, find_user_by_email
-from app.utils.auth_utils import (
-    generate_verification_code,
-    get_password_hash,
-    verify_password,
-    create_access_token
-)
+from app.utils.auth_utils import generate_verification_code, create_login_tokens
 from datetime import timedelta, datetime, timezone
-from app.core.config import get_settings
+from app.core.config.config import get_settings
 import jwt
 
-secret = get_settings().SECRET_KEY
+settings = get_settings()
+SECRET_KEY = settings.JWT_SECRET
+ALGORITHM = settings.JWT_ALGORITHM
 
 class AuthService:
-    def __init__(self, secret_key: str, jwt_algorithm: str = "HS256"):
+    def __init__(self, secret_key: str, jwt_algorithm: str):
         self.secret_key = secret_key
         self.jwt_algorithm = jwt_algorithm
         self.signup_token_duration = timedelta(minutes=30)
@@ -118,18 +116,28 @@ class AuthService:
                 detail=validations["invalid_credentials"]
             )
 
-        access_token = create_access_token(data={"sub": str(found_user.email)})
+        user_response_data = UserResponse(
+            id=found_user.id,
+            name=found_user.name,
+            email=found_user.email,
+            role=found_user.role,
+            accountStatus=found_user.accountStatus
+        )
+
+        tokens = create_login_tokens(user_response_data)
+
         return {
             "message": success_messages['login'],
             "data": {
-                "access_token": access_token,
                 "user": {
+                    "id": str(found_user.id, ),
                     "name": found_user.name,
                     "email": found_user.email,
                     "role": found_user.role,
                     "accountStatus": found_user.accountStatus,
-                }
+                },
+                "token": tokens,
             }
         }
 
-auth_service = AuthService(secret_key=secret)
+auth_service = AuthService(secret_key=SECRET_KEY, jwt_algorithm=ALGORITHM)
