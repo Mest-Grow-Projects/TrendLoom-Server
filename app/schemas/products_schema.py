@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field
 from app.core.config.constants import validations, patterns_regex
 from typing import List
 from app.database.models.products import Attributes, StockStatus
-from beanie import PydanticObjectId
 
 
 class ProductsSchema(BaseModel):
@@ -13,6 +12,7 @@ class ProductsSchema(BaseModel):
         pattern=patterns_regex["name"],
         description=validations["name"],
     )
+    image: str
     description: str = Field(min_length=2)
     price: float
 
@@ -23,10 +23,15 @@ class UpdateProductSchema(BaseModel):
     name: str | None = None
     description: str | None = None
     price: float | None = None
-    images: List[str] | None = None
+    image: str | None = None
+    detailsImage: List[str] | None = None
+    brand: str | None = None
+    category: str | None = None
     attributes: List[Attributes] | None = None
     features: List[str] | None = None
     specifications: List[str] | None = None
+    tags: List[str] | None = None
+    stock: int | None = None
     stockStatus: StockStatus | None = None
     is_featured: bool | None = None
     is_new: bool | None = None
@@ -36,15 +41,20 @@ class UpdateProductSchema(BaseModel):
 
 
 class ProductOut(BaseModel):
-    id: PydanticObjectId
+    id: str
     name: str
     description: str
     price: float
     currency: str = Field(default="USD")
-    images: List[str] | None = None
+    image: str | None = None
+    brand: str | None = None
+    category: str | None = None
+    detailsImage: List[str] | None = None
     attributes: List[Attributes] | None = None
     features: List[str] | None = None
     specifications: List[str] | None = None
+    tags: List[str] | None = None
+    stock: int | None = None
     stockStatus: StockStatus
     is_featured: bool | None = None
     is_new: bool | None = None
