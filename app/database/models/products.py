@@ -23,7 +23,7 @@ class Product(Document, TimestampMixin):
     description: str
     price: Annotated[float, Indexed()]
     currency: str = Field(default="USD")
-    image: List[str]
+    image: str
     detailsImage: List[str] | None = None
     brand: Link[Brand] | None = None
     category: Link[Category] | None = None
