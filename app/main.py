@@ -44,18 +44,18 @@ def read_root():
     return messages["welcome"]
 
 app.include_router(auth_router, prefix="/api")
+
+app.include_router(
+    cart_router,
+    prefix="/api",
+    dependencies=[Depends(get_authenticated_user)]
+)
 app.include_router(
     products_router,
     prefix="/api",
-    dependencies=[Depends(get_authenticated_user)]
 )
 app.include_router(
     users_router,
-    prefix="/api",
-    dependencies=[Depends(get_authenticated_user)]
-)
-app.include_router(
-    cart_router,
     prefix="/api",
     dependencies=[Depends(get_authenticated_user)]
 )
