@@ -1,18 +1,17 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import List
-from beanie import PydanticObjectId
 
 class AddToCartRequest(BaseModel):
-    product_id: PydanticObjectId
+    product_id: str
     quantity: int = 1
 
 class UpdateCartItemRequest(BaseModel):
-    product_id: PydanticObjectId
+    product_id: str
     quantity: int
 
 class CartItemResponse(BaseModel):
-    product_id: PydanticObjectId
+    product_id: str
     quantity: int
 
 class CartResponse(BaseModel):
