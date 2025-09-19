@@ -3,9 +3,10 @@ from app.database.models.cart import Cart
 from app.database.models.products import Product
 from fastapi import HTTPException, status
 from app.core.config.constants import status_messages
-from app.database.models.user import User
 from beanie.operators import In
 from beanie import PydanticObjectId
+from app.database.repo.user_repo import find_user_by_id
+
 
 async def check_existing_product(name: str) -> bool:
     existing_product = await Product.find_one(Product.name == name)
@@ -25,7 +26,9 @@ async def find_product_by_id(product_id: str) -> Product:
         )
     return product
 
-async def get_or_create_cart(user: User) -> Cart:
+async def get_or_create_cart(user_id: str) -> Cart:
+    user = await find_user_by_id(user_id)
+
     cart = await Cart.find_one(
         Cart.user_id == user.id,
         fetch_links=True
