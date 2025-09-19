@@ -1,8 +1,6 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status
 from .cart_service import cart_service
 from app.schemas.cart_schema import AddToCartRequest
-from beanie import PydanticObjectId
-from pydantic import ValidationError
 
 router = APIRouter(
     prefix="/cart",
@@ -23,14 +21,7 @@ async def add_to_cart(user_id: str, data: AddToCartRequest):
     summary="Get products from cart"
 )
 async def get_from_cart(user_id: str):
-    try:
-        object_id = PydanticObjectId(user_id)
-        return await cart_service.get_from_cart(object_id)
-    except ValidationError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"The provided user_id '{user_id}' is not a valid Object ID.",
-        )
+    return await cart_service.get_from_cart(user_id)
 
 @router.delete(
     "/{user_id}",
