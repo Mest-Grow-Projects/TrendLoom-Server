@@ -9,6 +9,10 @@ from app.schemas.products_schema import (
 )
 from app.core.security.role_guard import RoleGuard
 from app.database.models.user import Roles
+from app.core.security.auth_guard import get_authenticated_user
+from typing import Annotated
+
+
 admin_access = RoleGuard(allowed_roles=[Roles.ADMIN])
 product_access = RoleGuard(allowed_roles=[Roles.PRODUCT_ADMIN, Roles.ADMIN])
 
@@ -24,7 +28,11 @@ router = APIRouter(
     response_model=ProductResponse,
     dependencies=[Depends(admin_access)],
 )
-async def create_product(data: ProductsSchema):
+async def create_product(
+    data: ProductsSchema,
+    user: Annotated[dict, Depends(get_authenticated_user)],
+    _: None = Depends(admin_access)
+):
     return await product_service.create_product(data)
 
 @router.get(
@@ -52,7 +60,7 @@ async def get_product(product_id: str):
     response_model=ProductResponse,
     dependencies=[Depends(product_access)],
 )
-async def update_product(product_id: str, product: UpdateProductSchema):
+async def update_product(product_id: str, product: Annotated[UpdateProductSchema, Depends(get_authenticated_user)]):
     return await product_service.update_product_by_id(product_id, product)
 
 @router.delete(
@@ -62,5 +70,5 @@ async def update_product(product_id: str, product: UpdateProductSchema):
     response_model=MessageResponse,
     dependencies=[Depends(product_access)],
 )
-async def delete_product(product_id: str):
+async def delete_product(product_id: Annotated[str, Depends(get_authenticated_user)]):
     return await product_service.delete_product(product_id)
